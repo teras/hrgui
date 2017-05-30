@@ -24,6 +24,8 @@ import javax.swing.text.StyledDocument;
 
 public class HiResTextPane extends JTextPane implements HiResComponent {
 
+    private boolean shouldMoveToBottom = true;
+
     public HiResTextPane() {
     }
 
@@ -49,7 +51,8 @@ public class HiResTextPane extends JTextPane implements HiResComponent {
             doc.insertString(doc.getLength(), text.toString(), attr);
         } catch (BadLocationException ex) {
         }
-        setCaretPosition(doc.getLength());
+        if (shouldMoveToBottom)
+            setCaretPosition(doc.getLength());
     }
 
     public void removeChars(int howMany) {
@@ -68,4 +71,9 @@ public class HiResTextPane extends JTextPane implements HiResComponent {
         }
         setCaretPosition(doc.getLength());
     }
+
+    public void setShouldMoveToBottom(boolean shouldMoveToBottom) {
+        this.shouldMoveToBottom = shouldMoveToBottom;
+    }
+
 }
