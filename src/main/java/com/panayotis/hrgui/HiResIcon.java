@@ -25,7 +25,6 @@ import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
-import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.GrayFilter;
 import javax.swing.Icon;
@@ -88,7 +87,8 @@ public class HiResIcon extends ImageIcon {
             in = ImageIO.read(HiResIcon.class.getClassLoader().getResource(resource + (scale > 1 ? "@2x" : "") + ".png"));
             if (!tinted)
                 return in;
-        } catch (IOException ex) {
+        } catch (Exception ex) {
+            System.err.println("Unable to locate resource " + resource);
             return null;
         }
         BufferedImage out = new BufferedImage(in.getWidth(), in.getHeight(), BufferedImage.TYPE_INT_ARGB);
