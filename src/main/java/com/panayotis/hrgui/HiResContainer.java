@@ -15,5 +15,11 @@
  */
 package com.panayotis.hrgui;
 
+import java.awt.Component;
+
 public interface HiResContainer extends HiResComponent {
+
+    public Component add(Component comp);
+
+    public void add(Component comp, Object constraints);
 }

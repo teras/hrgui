@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.panayotis</groupId>
     <artifactId>hrgui</artifactId>
-    <version>0.1.1</version>
+    <version>0.1.2</version>
     <name>hrgui</name>
     <description>High Resolution HiDPI friendly Swing based user interface</description>
     <url>https://github.com/teras/hrgui</url>
