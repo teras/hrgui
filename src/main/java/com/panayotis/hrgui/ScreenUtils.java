@@ -66,16 +66,22 @@ public class ScreenUtils {
     }
 
     public static Font font(Font source) {
+        if (source == null)
+            return null;
         return shouldAdjust
                 ? source.deriveFont(source.getSize2D() * textScale)
                 : source;
     }
 
     public static Font fontFull(Font source) {
+        if (source == null)
+            return null;
         return source.deriveFont(source.getSize2D() * textScale * textScale * graphicsScale);
     }
 
     public static Dimension dimension(Dimension d) {
+        if (d == null)
+            return null;
         return shouldAdjust
                 ? new Dimension((int) (d.width * graphicsScale), (int) (d.height * graphicsScale))
                 : d;
@@ -88,6 +94,8 @@ public class ScreenUtils {
     }
 
     public static Insets insets(Insets i) {
+        if (i == null)
+            return null;
         return insets(i.top, i.left, i.bottom, i.right);
     }
 }
