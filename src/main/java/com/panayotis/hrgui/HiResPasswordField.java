@@ -15,7 +15,6 @@
  */
 package com.panayotis.hrgui;
 
-import java.awt.Component;
 import java.awt.Font;
 import javax.swing.JPasswordField;
 import javax.swing.text.Document;
@@ -48,12 +47,7 @@ public class HiResPasswordField extends JPasswordField implements HiResTextCompo
     }
 
     @Override
-    public Component comp() {
-        return this;
-    }
-
-    @Override
-    public JTextComponent tcomp() {
+    public JTextComponent comp() {
         return this;
     }
 

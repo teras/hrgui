@@ -19,5 +19,6 @@ import javax.swing.text.JTextComponent;
 
 public interface HiResTextComponent extends HiResComponent {
 
-    public JTextComponent tcomp();
+    @Override
+    public JTextComponent comp();
 }

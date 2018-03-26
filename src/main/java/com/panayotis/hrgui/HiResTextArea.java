@@ -15,7 +15,6 @@
  */
 package com.panayotis.hrgui;
 
-import java.awt.Component;
 import java.awt.Font;
 import javax.swing.JTextArea;
 import javax.swing.text.Document;
@@ -50,14 +49,9 @@ public class HiResTextArea extends JTextArea implements HiResTextComponent {
     public void setFont(Font f) {
         super.setFont(ScreenUtils.fontFull(f));
     }
-    
-    @Override
-    public Component comp() {
-        return this;
-    }
 
     @Override
-    public JTextComponent tcomp() {
+    public JTextComponent comp() {
         return this;
     }
 

@@ -15,7 +15,6 @@
  */
 package com.panayotis.hrgui;
 
-import java.awt.Component;
 import java.awt.Font;
 import javax.swing.JTextField;
 import javax.swing.text.Document;
@@ -48,12 +47,7 @@ public class HiResTextField extends JTextField implements HiResTextComponent {
     }
 
     @Override
-    public Component comp() {
-        return this;
-    }
-
-    @Override
-    public JTextComponent tcomp() {
+    public JTextComponent comp() {
         return this;
     }
 

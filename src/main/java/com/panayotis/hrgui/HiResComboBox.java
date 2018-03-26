@@ -21,13 +21,13 @@ import java.util.Vector;
 import javax.swing.ComboBoxModel;
 import javax.swing.JComboBox;
 
-public class HiResComboBox extends JComboBox implements HiResComponent{
+public class HiResComboBox<T> extends JComboBox<T> implements HiResComponent {
 
     public HiResComboBox(ComboBoxModel aModel) {
         super(aModel);
     }
 
-    public HiResComboBox(Object[] items) {
+    public HiResComboBox(T[] items) {
         super(items);
     }
 
@@ -37,7 +37,8 @@ public class HiResComboBox extends JComboBox implements HiResComponent{
 
     public HiResComboBox() {
     }
-        @Override
+
+    @Override
     public Component comp() {
         return this;
     }
