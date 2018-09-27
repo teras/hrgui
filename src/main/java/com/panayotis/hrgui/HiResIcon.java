@@ -15,14 +15,7 @@
  */
 package com.panayotis.hrgui;
 
-import java.awt.AlphaComposite;
-import java.awt.Component;
-import java.awt.GradientPaint;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GraphicsEnvironment;
-import java.awt.Image;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 import javax.imageio.ImageIO;
@@ -35,7 +28,11 @@ public class HiResIcon extends ImageIcon {
     private static int scale = ScreenUtils.isHiDPI() ? 2 : 1;
 
     public HiResIcon(String resourceName, boolean tinted) {
-        super(resourceToImage(resourceName, tinted));
+        super(resourceToImage(resourceName, tinted, null, null));
+    }
+
+    public HiResIcon(String resourceName, Color topColor, Color bottomColor) {
+        super(resourceToImage(resourceName, topColor != null || bottomColor != null, topColor, bottomColor));
     }
 
     public HiResIcon(Image image) {
@@ -81,7 +78,7 @@ public class HiResIcon extends ImageIcon {
         return new HiResIcon(GrayFilter.createDisabledImage(getImage()));
     }
 
-    private static Image resourceToImage(String resource, boolean tinted) {
+    private static Image resourceToImage(String resource, boolean tinted, Color topcolor, Color bottomcolor) {
         BufferedImage in;
         try {
             in = ImageIO.read(HiResIcon.class.getClassLoader().getResource(resource + (scale > 1 ? "@2x" : "") + ".png"));
@@ -91,6 +88,11 @@ public class HiResIcon extends ImageIcon {
             System.err.println("Unable to locate resource " + resource);
             return null;
         }
+        if (topcolor == null)
+            topcolor = ScreenUtils.topcolor;
+        if (bottomcolor == null)
+            bottomcolor = ScreenUtils.bottomcolor;
+
         BufferedImage out = new BufferedImage(in.getWidth(), in.getHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = out.createGraphics();
         g2.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
@@ -102,7 +104,7 @@ public class HiResIcon extends ImageIcon {
         g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         g2.drawImage(in, 0, 0, null);
         g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_IN, 1));
-        g2.setPaint(new GradientPaint(0, 0, ScreenUtils.topcolor, 0, in.getHeight(), ScreenUtils.bottomcolor));
+        g2.setPaint(new GradientPaint(0, 0, topcolor, 0, in.getHeight(), bottomcolor));
         g2.fillRect(0, 0, in.getWidth(), in.getHeight());
         g2.dispose();
         return out;
