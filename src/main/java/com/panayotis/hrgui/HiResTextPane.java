@@ -20,9 +20,10 @@ import java.awt.Font;
 import javax.swing.JTextPane;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.JTextComponent;
 import javax.swing.text.StyledDocument;
 
-public class HiResTextPane extends JTextPane implements HiResComponent {
+public class HiResTextPane extends JTextPane implements HiResTextComponent {
 
     private boolean shouldMoveToBottom = true;
 
@@ -39,7 +40,7 @@ public class HiResTextPane extends JTextPane implements HiResComponent {
     }
 
     @Override
-    public Component comp() {
+    public JTextComponent comp() {
         return this;
     }
 
