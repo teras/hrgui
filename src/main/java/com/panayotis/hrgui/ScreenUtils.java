@@ -37,9 +37,9 @@ public class ScreenUtils {
         boolean IS_WINDOWS = OS.contains("windows");
         boolean IS_MACOSX = OS.contains("mac");
 
-        HiDPI = Toolkit.getDefaultToolkit().getScreenResolution() > 120;
+        dpiScale = Toolkit.getDefaultToolkit().getScreenResolution()/96f;
+        HiDPI = dpiScale > 1.2;
         shouldAdjust = !IS_MACOSX && HiDPI;
-        dpiScale = HiDPI ? 2 : 1;
 
         graphicsScale = shouldAdjust ? dpiScale : 1;
         textScale = shouldAdjust ? (float) Math.pow(dpiScale, 0.15) : 1;
