@@ -18,6 +18,7 @@ package com.panayotis.hrgui;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
+import java.net.URL;
 import javax.imageio.ImageIO;
 import javax.swing.GrayFilter;
 import javax.swing.Icon;
@@ -53,11 +54,11 @@ public class HiResIcon extends ImageIcon {
         if (observer == null)
             observer = c;
         Image image = getImage();
-        final Graphics2D g2 = (Graphics2D) g.create(x, y, image.getWidth(observer), image.getHeight(observer));
-        g2.scale(ScreenUtils.getGraphicsScale() / scale, ScreenUtils.getGraphicsScale() / scale);
-        g2.drawImage(image, 0, 0, observer);
-        g2.scale(1, 1);
-        g2.dispose();
+        Graphics2D g = upgradeQuality(g.create(x, y, image.getWidth(observer), image.getHeight(observer)));
+        g.scale(ScreenUtils.getGraphicsScale() / scale, ScreenUtils.getGraphicsScale() / scale);
+        g.drawImage(image, 0, 0, observer);
+        g.scale(1, 1);
+        g.dispose();
     }
 
     @Override
@@ -79,29 +80,17 @@ public class HiResIcon extends ImageIcon {
     }
 
     private static Image resourceToImage(String resource, boolean tinted, Color topcolor, Color bottomcolor) {
-        BufferedImage in;
-        try {
-            in = ImageIO.read(HiResIcon.class.getClassLoader().getResource(resource + (scale > 1 ? "@2x" : "") + ".png"));
-            if (!tinted)
-                return in;
-        } catch (Exception ex) {
-            System.err.println("Unable to locate resource " + resource);
-            return null;
-        }
+        BufferedImage in = findIcon(resource);
+        if (in == null || !tinted)
+            return in;
+
         if (topcolor == null)
             topcolor = ScreenUtils.topcolor;
         if (bottomcolor == null)
             bottomcolor = ScreenUtils.bottomcolor;
 
         BufferedImage out = new BufferedImage(in.getWidth(), in.getHeight(), BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2 = out.createGraphics();
-        g2.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
-        g2.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
-        g2.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
-        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        Graphics2D g2 = upgradeQuality(out.createGraphics());
         g2.drawImage(in, 0, 0, null);
         g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_IN, 1));
         g2.setPaint(new GradientPaint(0, 0, topcolor, 0, in.getHeight(), bottomcolor));
@@ -117,11 +106,49 @@ public class HiResIcon extends ImageIcon {
             int width = icon.getIconWidth();
             int height = icon.getIconHeight();
             BufferedImage image = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration().createCompatibleImage(width, height);
-            Graphics2D g = image.createGraphics();
+            Graphics2D g = upgradeQuality(image.createGraphics());
             icon.paintIcon(null, g, 0, 0);
             g.dispose();
             return image;
         }
     }
 
+    private static BufferedImage halfSize(Image input) {
+        BufferedImage result = new BufferedImage(input.getWidth(null) / 2, input.getHeight(null) / 2, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = upgradeQuality(result.createGraphics());
+        g.drawImage(input, 0, 0, result.getWidth(), result.getHeight(), null);
+        g.dispose();
+        return result;
+    }
+
+    private static BufferedImage findIcon(String resourcePath) {
+        URL resource;
+        try {
+            resource = HiResIcon.class.getClassLoader().getResource(resourcePath + (scale > 1 ? "@2x" : "") + ".png");
+            if (resource != null)
+                return ImageIO.read(resource);
+        } catch (Exception ignored) {
+        }
+        if (scale <= 1)
+            try {
+                resource = HiResIcon.class.getClassLoader().getResource(resourcePath + "@2x.png");
+                if (resource != null)
+                    return halfSize(ImageIO.read(resource));
+            } catch (Exception ignored) {
+            }
+        System.err.println("Unable to locate resource " + resourcePath);
+        return null;
+    }
+
+    private static Graphics2D upgradeQuality(Graphics g) {
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+        g2.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
+        g2.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        return g2;
+    }
 }
