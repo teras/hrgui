@@ -26,24 +26,37 @@ public class ScreenUtils {
     static Color topcolor = Color.black;
     static Color bottomcolor = Color.black;
     private final static boolean HiDPI;
-    private final static boolean shouldAdjust;
     private final static float dpiScale;
-    private final static float graphicsScale;
-    private final static float textScale;
+
+    private static boolean shouldAdjust;
+    private static float graphicsScale;
+    private static float textScale;
 
     static {
         String OS = System.getProperty("os.name").toLowerCase();
         boolean IS_LINUX = OS.contains("linux");
         boolean IS_WINDOWS = OS.contains("windows");
         boolean IS_MACOSX = OS.contains("mac");
+        boolean NEW_WINDOWS = false;
+        try {
+            NEW_WINDOWS = IS_WINDOWS && Double.parseDouble(System.getProperty("os.version")) > 9.9999;
+        } catch (NumberFormatException ignored) {
+        }
 
-        dpiScale = Toolkit.getDefaultToolkit().getScreenResolution()/96f;
+        dpiScale = Toolkit.getDefaultToolkit().getScreenResolution() / 96f;
         HiDPI = dpiScale > 1.2;
-        shouldAdjust = !IS_MACOSX && HiDPI;
+        shouldAdjust = (!IS_MACOSX && (IS_LINUX || NEW_WINDOWS)) && HiDPI;
+        updateScales();
+    }
 
+    private static void updateScales() {
         graphicsScale = shouldAdjust ? dpiScale : 1;
         textScale = shouldAdjust ? (float) Math.pow(dpiScale, 0.15) : 1;
+    }
 
+    public static void setShouldAdjust(boolean adjust) {
+        shouldAdjust = adjust;
+        updateScales();
     }
 
     public static void setTint(Color topColor, Color bottomColor) {

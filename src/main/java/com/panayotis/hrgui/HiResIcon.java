@@ -54,11 +54,11 @@ public class HiResIcon extends ImageIcon {
         if (observer == null)
             observer = c;
         Image image = getImage();
-        Graphics2D g = upgradeQuality(g.create(x, y, image.getWidth(observer), image.getHeight(observer)));
-        g.scale(ScreenUtils.getGraphicsScale() / scale, ScreenUtils.getGraphicsScale() / scale);
-        g.drawImage(image, 0, 0, observer);
-        g.scale(1, 1);
-        g.dispose();
+        Graphics2D g2 = upgradeQuality(g.create(x, y, image.getWidth(observer), image.getHeight(observer)));
+        g2.scale(ScreenUtils.getGraphicsScale() / scale, ScreenUtils.getGraphicsScale() / scale);
+        g2.drawImage(image, 0, 0, observer);
+        g2.scale(1, 1);
+        g2.dispose();
     }
 
     @Override
