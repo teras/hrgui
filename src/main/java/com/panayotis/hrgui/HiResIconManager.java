@@ -24,21 +24,21 @@ interface HiResIconManager {
         setPressedIconSuper(icon);
         setSelectedIconSuper(icon);
         setRolloverIconSuper(icon);
-        HiResIcon disabled = icon.getDisabledIcon();
+        HiResIcon disabled = icon == null ? null : icon.getDisabledIcon();
         setDisabledIconSuper(disabled);
         setDisabledSelectedIconSuper(disabled);
     }
 
-    public void setIconSuper(Icon icon);
+    void setIconSuper(Icon icon);
 
-    public void setPressedIconSuper(Icon icon);
+    void setPressedIconSuper(Icon icon);
 
-    public void setSelectedIconSuper(Icon icon);
+    void setSelectedIconSuper(Icon icon);
 
-    public void setRolloverIconSuper(Icon icon);
+    void setRolloverIconSuper(Icon icon);
 
-    public void setDisabledIconSuper(Icon disabled);
+    void setDisabledIconSuper(Icon disabled);
 
-    public void setDisabledSelectedIconSuper(Icon disabled);
+    void setDisabledSelectedIconSuper(Icon disabled);
 
 }

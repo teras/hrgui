@@ -100,7 +100,9 @@ public class HiResIcon extends ImageIcon {
     }
 
     static Image iconToImage(Icon icon) {
-        if (icon instanceof ImageIcon)
+        if (icon == null)
+            return null;
+        else if (icon instanceof ImageIcon)
             return ((ImageIcon) icon).getImage();
         else {
             int width = icon.getIconWidth();

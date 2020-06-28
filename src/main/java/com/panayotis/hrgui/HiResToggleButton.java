@@ -68,14 +68,14 @@ public class HiResToggleButton extends JToggleButton implements HiResComponent, 
     }
 
     public void setIcon(Icon defaultIcon) {
-        HiResIcon icon = defaultIcon instanceof HiResIcon ? (HiResIcon) defaultIcon : new HiResIcon(defaultIcon);
+        HiResIcon icon = defaultIcon == null ? null : defaultIcon instanceof HiResIcon ? (HiResIcon) defaultIcon : new HiResIcon(defaultIcon);
         setIcons(icon);
     }
 
     public void setSelectedIcon(String iconResource, boolean tinted) {
-        HiResIcon icn = new HiResIcon(iconResource, tinted);
-        setSelectedIconSuper(new HiResIcon(iconResource, tinted));
-        setDisabledIconSuper(icn.getDisabledIcon());
+        HiResIcon icn = iconResource == null ? null : new HiResIcon(iconResource, tinted);
+        setSelectedIconSuper(iconResource == null ? null : new HiResIcon(iconResource, tinted));
+        setDisabledIconSuper(icn == null ? null : icn.getDisabledIcon());
     }
 
     @Override
