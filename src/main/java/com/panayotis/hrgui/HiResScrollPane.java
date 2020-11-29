@@ -15,8 +15,8 @@
  */
 package com.panayotis.hrgui;
 
-import java.awt.Component;
-import javax.swing.JScrollPane;
+import java.awt.*;
+import javax.swing.*;
 
 public class HiResScrollPane extends JScrollPane implements HiResComponent {
 
@@ -36,8 +36,32 @@ public class HiResScrollPane extends JScrollPane implements HiResComponent {
     }
 
     @Override
+    public void setFont(Font f) {
+        HiResFontManager.setFont(this, f);
+    }
+
+    @Override
+    public Font getFont() {
+        return HiResFontManager.getFont(this);
+    }
+
+    @Override
+    public JToolTip createToolTip() {
+        return new HiResTooltip(this);
+    }
+
+    @Override
+    public void setFontSuper(Font font) {
+        super.setFont(font);
+    }
+
+    @Override
+    public Font getFontSuper() {
+        return super.getFont();
+    }
+
+    @Override
     public Component comp() {
         return this;
     }
-
 }

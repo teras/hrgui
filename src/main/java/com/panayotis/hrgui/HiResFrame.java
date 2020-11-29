@@ -15,10 +15,7 @@
  */
 package com.panayotis.hrgui;
 
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.GraphicsConfiguration;
-import java.awt.HeadlessException;
+import java.awt.*;
 import javax.swing.JFrame;
 
 public class HiResFrame extends JFrame implements HiResComponent {
@@ -56,6 +53,26 @@ public class HiResFrame extends JFrame implements HiResComponent {
     @Override
     public void setMaximumSize(Dimension maximumSize) {
         super.setMaximumSize(ScreenUtils.dimension(maximumSize));
+    }
+
+    @Override
+    public void setFont(Font f) {
+        HiResFontManager.setFont(this, f);
+    }
+
+    @Override
+    public Font getFont() {
+        return HiResFontManager.getFont(this);
+    }
+
+    @Override
+    public void setFontSuper(Font font) {
+        super.setFont(font);
+    }
+
+    @Override
+    public Font getFontSuper() {
+        return super.getFont();
     }
 
     @Override

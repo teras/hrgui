@@ -15,39 +15,59 @@
  */
 package com.panayotis.hrgui;
 
-import java.awt.Component;
-import java.awt.Font;
-import javax.swing.Action;
-import javax.swing.Icon;
-import javax.swing.JButton;
+import javax.swing.*;
+import java.awt.*;
 
-public class HiResButton extends JButton implements HiResComponent, HiResIconManager {
+public class HiResButton extends JButton implements HiResIconManager, HiResComponent {
 
     public HiResButton() {
+        this(null, null);
     }
 
     @SuppressWarnings("LeakingThisInConstructor")
     public HiResButton(HiResIcon icon) {
-        setIcons(icon);
+        this(null, icon);
     }
 
     public HiResButton(String text) {
-        super(text);
+        this(text, null);
     }
 
     public HiResButton(Action a) {
-        super(a);
+        this(null, null);
+        setAction(a);
     }
 
     @SuppressWarnings("LeakingThisInConstructor")
     public HiResButton(String text, HiResIcon icon) {
         super(text);
         setIcons(icon);
+        setFont(getFont());
     }
 
     @Override
-    public void setFont(Font font) {
-        super.setFont(ScreenUtils.font(font));
+    public void setFont(Font f) {
+        HiResFontManager.setFont(this, f);
+    }
+
+    @Override
+    public Font getFont() {
+        return HiResFontManager.getFont(this);
+    }
+
+    @Override
+    public JToolTip createToolTip() {
+        return new HiResTooltip(this);
+    }
+
+    @Override
+    public void setFontSuper(Font font) {
+        super.setFont(font);
+    }
+
+    @Override
+    public Font getFontSuper() {
+        return super.getFont();
     }
 
     public void setIcon(String iconResource, boolean tinted) {
@@ -99,5 +119,4 @@ public class HiResButton extends JButton implements HiResComponent, HiResIconMan
     public Component comp() {
         return this;
     }
-
 }

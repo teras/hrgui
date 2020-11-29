@@ -41,5 +41,4 @@ public class HiResMatteBorder extends MatteBorder {
     public HiResMatteBorder(Icon tileIcon) {
         super(tileIcon);
     }
-
 }

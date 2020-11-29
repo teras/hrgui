@@ -15,43 +15,22 @@
  */
 package com.panayotis.hrgui;
 
-import java.awt.*;
 import javax.swing.*;
+import java.awt.*;
 
-public class HiResRadioButton extends JRadioButton implements HiResIconManager, HiResComponent {
+public class HiResMenu extends JMenu implements HiResIconManager, HiResComponent {
 
-    public HiResRadioButton() {
-        this(null, null, false);
+    public HiResMenu() {
+        this((Action) null);
     }
 
-    public HiResRadioButton(HiResIcon icon) {
-        this(null, icon, false);
-    }
-
-    public HiResRadioButton(Action a) {
-        this(null, null, false);
+    public HiResMenu(Action a) {
+        this((String) null);
         setAction(a);
     }
 
-    public HiResRadioButton(HiResIcon icon, boolean selected) {
-        this(null, icon, selected);
-    }
-
-    public HiResRadioButton(String text) {
-        this(text, null, false);
-    }
-
-    public HiResRadioButton(String text, boolean selected) {
-        this(text, null, selected);
-    }
-
-    public HiResRadioButton(String text, HiResIcon icon) {
-        this(text, icon, false);
-    }
-
-    public HiResRadioButton(String text, HiResIcon icon, boolean selected) {
-        super(text, selected);
-        setIcons(icon);
+    public HiResMenu(String s) {
+        super(s);
         setFont(getFont());
     }
 
@@ -80,14 +59,24 @@ public class HiResRadioButton extends JRadioButton implements HiResIconManager, 
         return super.getFont();
     }
 
-    @Override
-    public Component comp() {
-        return this;
+    public void setIcon(String iconResource, boolean tinted) {
+        setIcons(iconResource == null ? null : new HiResIcon(iconResource, tinted));
+    }
+
+    public void setIcon(Icon defaultIcon) {
+        HiResIcon icon = defaultIcon == null ? null : defaultIcon instanceof HiResIcon ? (HiResIcon) defaultIcon : new HiResIcon(defaultIcon);
+        setIcons(icon);
+    }
+
+    public void setSelectedIcon(String iconResource, boolean tinted) {
+        HiResIcon icn = iconResource == null ? null : new HiResIcon(iconResource, tinted);
+        setSelectedIconSuper(iconResource == null ? null : new HiResIcon(iconResource, tinted));
+        setDisabledIconSuper(icn == null ? null : icn.getDisabledIcon());
     }
 
     @Override
-    public void setIconSuper(Icon icon) {
-        super.setIcon(icon);
+    public void setIconSuper(Icon defaultIcon) {
+        super.setIcon(defaultIcon);
     }
 
     @Override
@@ -113,5 +102,10 @@ public class HiResRadioButton extends JRadioButton implements HiResIconManager, 
     @Override
     public void setDisabledSelectedIconSuper(Icon disabled) {
         super.setDisabledSelectedIcon(disabled);
+    }
+
+    @Override
+    public Component comp() {
+        return this;
     }
 }

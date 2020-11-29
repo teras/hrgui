@@ -15,10 +15,17 @@
  */
 package com.panayotis.hrgui;
 
-import java.awt.Component;
+import java.awt.*;
 
 public interface HiResComponent {
 
-    public Component comp();
+    Component comp();
 
+    void setFont(Font font);
+
+    Font getFont();
+
+    void setFontSuper(Font font);
+
+    Font getFontSuper();
 }

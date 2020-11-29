@@ -15,37 +15,75 @@
  */
 package com.panayotis.hrgui;
 
-import java.awt.Component;
-import java.awt.Font;
+import javax.swing.*;
+import java.awt.*;
 import java.util.Vector;
-import javax.swing.JList;
-import javax.swing.ListModel;
 
 public class HiResList<A> extends JList<A> implements HiResComponent {
-
-    public HiResList(ListModel<A> dataModel) {
-        super(dataModel);
+    public HiResList() {
+        this(new DefaultListModel<>());
     }
 
     public HiResList(A[] listData) {
-        super(listData);
+        this(new AbstractListModel<A>() {
+            @Override
+            public int getSize() {
+                return listData.length;
+            }
+
+            @Override
+            public A getElementAt(int index) {
+                return listData[index];
+            }
+        });
     }
 
     public HiResList(Vector<? extends A> listData) {
-        super(listData);
+        this(new AbstractListModel<A>() {
+            @Override
+            public int getSize() {
+                return listData.size();
+            }
+
+            @Override
+            public A getElementAt(int index) {
+                return listData.get(index);
+            }
+        });
     }
 
-    public HiResList() {
+    public HiResList(ListModel<A> dataModel) {
+        super(dataModel);
+        setFont(getFont());
     }
 
     @Override
-    public void setFont(Font font) {
-        super.setFont(ScreenUtils.font(font));
+    public void setFont(Font f) {
+        HiResFontManager.setFont(this, f);
+    }
+
+    @Override
+    public Font getFont() {
+        return HiResFontManager.getFont(this);
+    }
+
+    @Override
+    public JToolTip createToolTip() {
+        return new HiResTooltip(this);
+    }
+
+    @Override
+    public void setFontSuper(Font font) {
+        super.setFont(font);
+    }
+
+    @Override
+    public Font getFontSuper() {
+        return super.getFont();
     }
 
     @Override
     public Component comp() {
         return this;
     }
-
 }

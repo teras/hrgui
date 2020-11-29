@@ -15,28 +15,49 @@
  */
 package com.panayotis.hrgui;
 
-import java.awt.Component;
-import java.awt.Font;
-import javax.swing.JTextPane;
+import javax.swing.*;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.StyledDocument;
+import java.awt.*;
 
 public class HiResTextPane extends JTextPane implements HiResTextComponent {
 
     private boolean shouldMoveToBottom = true;
 
     public HiResTextPane() {
+        setFont(getFont());
     }
 
     public HiResTextPane(StyledDocument doc) {
         super(doc);
+        setFont(getFont());
     }
 
     @Override
-    public void setFont(Font font) {
-        super.setFont(ScreenUtils.font(font));
+    public void setFont(Font f) {
+        HiResFontManager.setFont(this, f);
+    }
+
+    @Override
+    public Font getFont() {
+        return HiResFontManager.getFont(this);
+    }
+
+    @Override
+    public JToolTip createToolTip() {
+        return new HiResTooltip(this);
+    }
+
+    @Override
+    public void setFontSuper(Font font) {
+        super.setFont(font);
+    }
+
+    @Override
+    public Font getFontSuper() {
+        return super.getFont();
     }
 
     @Override
@@ -76,5 +97,4 @@ public class HiResTextPane extends JTextPane implements HiResTextComponent {
     public void setShouldMoveToBottom(boolean shouldMoveToBottom) {
         this.shouldMoveToBottom = shouldMoveToBottom;
     }
-
 }

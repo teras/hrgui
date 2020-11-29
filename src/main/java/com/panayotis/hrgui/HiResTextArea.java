@@ -15,44 +15,65 @@
  */
 package com.panayotis.hrgui;
 
-import java.awt.Font;
-import javax.swing.JTextArea;
+import java.awt.*;
+import javax.swing.*;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 
 public class HiResTextArea extends JTextArea implements HiResTextComponent {
 
     public HiResTextArea() {
+        this(null, null, 0, 0);
     }
 
     public HiResTextArea(String text) {
-        super(text);
+        this(null, text, 0, 0);
     }
 
     public HiResTextArea(int rows, int columns) {
-        super(rows, columns);
+        this(null, null, rows, columns);
     }
 
     public HiResTextArea(String text, int rows, int columns) {
-        super(text, rows, columns);
+        this(null, text, rows, columns);
     }
 
     public HiResTextArea(Document doc) {
-        super(doc);
+        this(doc, null, 0, 0);
     }
 
     public HiResTextArea(Document doc, String text, int rows, int columns) {
         super(doc, text, rows, columns);
+        setFont(getFont());
     }
 
     @Override
     public void setFont(Font f) {
-        super.setFont(ScreenUtils.fontFull(f));
+        HiResFontManager.setFont(this, f);
+    }
+
+    @Override
+    public Font getFont() {
+        return HiResFontManager.getFont(this);
+    }
+
+    @Override
+    public JToolTip createToolTip() {
+        return new HiResTooltip(this);
+    }
+
+    @Override
+    public void setFontSuper(Font font) {
+        super.setFont(font);
+    }
+
+    @Override
+    public Font getFontSuper() {
+        return super.getFont();
     }
 
     @Override
     public JTextComponent comp() {
         return this;
     }
-
 }

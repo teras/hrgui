@@ -27,5 +27,4 @@ public class HiResEmptyBorder extends EmptyBorder {
     public HiResEmptyBorder(Insets borderInsets) {
         super(ScreenUtils.insets(borderInsets));
     }
-
 }

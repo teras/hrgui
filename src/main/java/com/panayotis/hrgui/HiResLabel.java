@@ -15,44 +15,65 @@
  */
 package com.panayotis.hrgui;
 
-import java.awt.Component;
-import java.awt.Font;
-import javax.swing.Icon;
-import javax.swing.JLabel;
+import java.awt.*;
+import javax.swing.*;
 
 public class HiResLabel extends JLabel implements HiResComponent {
 
-    @SuppressWarnings("OverridableMethodCallInConstructor")
-    public HiResLabel(String text, HiResIcon icon, int horizontalAlignment) {
-        this(text, horizontalAlignment);
-        setIcon(icon);
-    }
-
-    public HiResLabel(String text, int horizontalAlignment) {
-        super(text, horizontalAlignment);
+    public HiResLabel() {
+        this(null, null, LEADING);
     }
 
     public HiResLabel(String text) {
-        super(text);
+        this(text, null, LEADING);
     }
 
-    @SuppressWarnings("OverridableMethodCallInConstructor")
-    public HiResLabel(HiResIcon icon, int horizontalAlignment) {
-        this(icon);
-        setHorizontalAlignment(horizontalAlignment);
-    }
-
-    @SuppressWarnings("OverridableMethodCallInConstructor")
     public HiResLabel(HiResIcon icon) {
-        setIcon(icon);
+        this(null, icon, LEADING);
     }
 
-    public HiResLabel() {
+    @SuppressWarnings("OverridableMethodCallInConstructor")
+    public HiResLabel(String text, HiResIcon icon) {
+        this(text, icon, LEADING);
+    }
+
+    public HiResLabel(String text, int horizontalAlignment) {
+        this(text, null, horizontalAlignment);
+    }
+
+    public HiResLabel(HiResIcon icon, int horizontalAlignment) {
+        this(null, icon, horizontalAlignment);
+    }
+
+    @SuppressWarnings("OverridableMethodCallInConstructor")
+    public HiResLabel(String text, HiResIcon icon, int horizontalAlignment) {
+        super(text, icon, horizontalAlignment);
+        setFont(getFont());
     }
 
     @Override
-    public void setFont(Font font) {
-        super.setFont(ScreenUtils.font(font));
+    public void setFont(Font f) {
+        HiResFontManager.setFont(this, f);
+    }
+
+    @Override
+    public Font getFont() {
+        return HiResFontManager.getFont(this);
+    }
+
+    @Override
+    public JToolTip createToolTip() {
+        return new HiResTooltip(this);
+    }
+
+    @Override
+    public void setFontSuper(Font font) {
+        super.setFont(font);
+    }
+
+    @Override
+    public Font getFontSuper() {
+        return super.getFont();
     }
 
     @Override

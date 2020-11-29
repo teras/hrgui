@@ -15,26 +15,32 @@
  */
 package com.panayotis.hrgui;
 
-import java.awt.Component;
-import java.awt.Font;
-import javax.swing.BoundedRangeModel;
-import javax.swing.JProgressBar;
+import java.awt.*;
+import javax.swing.*;
 
 public class HiResProgressBar extends JProgressBar implements HiResComponent {
 
     public HiResProgressBar() {
+        initFont();
     }
 
     public HiResProgressBar(int orient) {
         super(orient);
+        initFont();
     }
 
     public HiResProgressBar(int min, int max) {
         super(min, max);
+        initFont();
     }
 
     public HiResProgressBar(int orient, int min, int max) {
         super(orient, min, max);
+        initFont();
+    }
+
+    private void initFont() {
+        setFont(getFont());
     }
 
     public HiResProgressBar(BoundedRangeModel newModel) {
@@ -42,13 +48,32 @@ public class HiResProgressBar extends JProgressBar implements HiResComponent {
     }
 
     @Override
-    public void setFont(Font font) {
-        super.setFont(ScreenUtils.font(font));
+    public void setFont(Font f) {
+        HiResFontManager.setFont(this, f);
+    }
+
+    @Override
+    public Font getFont() {
+        return HiResFontManager.getFont(this);
+    }
+
+    @Override
+    public JToolTip createToolTip() {
+        return new HiResTooltip(this);
+    }
+
+    @Override
+    public void setFontSuper(Font font) {
+        super.setFont(font);
+    }
+
+    @Override
+    public Font getFontSuper() {
+        return super.getFont();
     }
 
     @Override
     public Component comp() {
         return this;
     }
-
 }

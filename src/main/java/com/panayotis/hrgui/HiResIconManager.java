@@ -40,5 +40,4 @@ interface HiResIconManager {
     void setDisabledIconSuper(Icon disabled);
 
     void setDisabledSelectedIconSuper(Icon disabled);
-
 }

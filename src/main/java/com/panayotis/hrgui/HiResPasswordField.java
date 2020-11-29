@@ -15,40 +15,61 @@
  */
 package com.panayotis.hrgui;
 
-import java.awt.Font;
-import javax.swing.JPasswordField;
+import java.awt.*;
+import javax.swing.*;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 
 public class HiResPasswordField extends JPasswordField implements HiResTextComponent {
 
     public HiResPasswordField() {
+        this(null, null, 0);
     }
 
     public HiResPasswordField(String text) {
-        super(text);
+        this(null, text, 0);
     }
 
     public HiResPasswordField(int columns) {
-        super(columns);
+        this(null, null, columns);
     }
 
     public HiResPasswordField(String text, int columns) {
-        super(text, columns);
+        this(null, text, columns);
     }
 
     public HiResPasswordField(Document doc, String text, int columns) {
         super(doc, text, columns);
+        setFont(getFont());
     }
 
     @Override
     public void setFont(Font f) {
-        super.setFont(ScreenUtils.font(f));
+        HiResFontManager.setFont(this, f);
+    }
+
+    @Override
+    public Font getFont() {
+        return HiResFontManager.getFont(this);
+    }
+
+    @Override
+    public JToolTip createToolTip() {
+        return new HiResTooltip(this);
+    }
+
+    @Override
+    public void setFontSuper(Font font) {
+        super.setFont(font);
+    }
+
+    @Override
+    public Font getFontSuper() {
+        return super.getFont();
     }
 
     @Override
     public JTextComponent comp() {
         return this;
     }
-
 }

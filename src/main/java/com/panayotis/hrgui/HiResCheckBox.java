@@ -15,52 +15,70 @@
  */
 package com.panayotis.hrgui;
 
-import java.awt.Component;
-import java.awt.Font;
-import javax.swing.Action;
-import javax.swing.Icon;
-import javax.swing.JCheckBox;
+import java.awt.*;
+import javax.swing.*;
 
-public class HiResCheckBox extends JCheckBox implements HiResComponent, HiResIconManager {
+public class HiResCheckBox extends JCheckBox implements HiResIconManager, HiResComponent {
 
     public HiResCheckBox() {
+        this(null, null, false);
     }
 
     public HiResCheckBox(HiResIcon icon) {
-        setIcons(icon);
+        this(null, icon, false);
     }
 
     public HiResCheckBox(HiResIcon icon, boolean selected) {
-        setSelected(selected);
-        setIcons(icon);
+        this(null, icon, selected);
     }
 
     public HiResCheckBox(String text) {
-        super(text);
+        this(text, null, false);
     }
 
     public HiResCheckBox(Action a) {
-        super(a);
+        this(null, null, false);
+        setAction(a);
     }
 
     public HiResCheckBox(String text, boolean selected) {
-        super(text, selected);
+        this(text, null, false);
     }
 
     public HiResCheckBox(String text, HiResIcon icon) {
-        super(text);
-        setIcons(icon);
+        this(text, icon, false);
     }
 
     public HiResCheckBox(String text, HiResIcon icon, boolean selected) {
-        super(text, icon, selected);
+        super(text, selected);
+        setIcons(icon);
+        setFont(getFont());
     }
 
     @Override
-    public void setFont(Font font) {
-        super.setFont(ScreenUtils.font(font));
+    public void setFont(Font f) {
+        HiResFontManager.setFont(this, f);
     }
 
+    @Override
+    public Font getFont() {
+        return HiResFontManager.getFont(this);
+    }
+
+    @Override
+    public JToolTip createToolTip() {
+        return new HiResTooltip(this);
+    }
+
+    @Override
+    public void setFontSuper(Font font) {
+        super.setFont(font);
+    }
+
+    @Override
+    public Font getFontSuper() {
+        return super.getFont();
+    }
     public void setIcon(String iconResource, boolean tinted) {
         setIcons(new HiResIcon(iconResource, tinted));
     }
@@ -110,5 +128,4 @@ public class HiResCheckBox extends JCheckBox implements HiResComponent, HiResIco
     public Component comp() {
         return this;
     }
-
 }

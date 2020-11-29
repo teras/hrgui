@@ -15,27 +15,26 @@
  */
 package com.panayotis.hrgui;
 
-import java.awt.Component;
-import java.awt.Font;
+import java.awt.*;
 import java.util.Vector;
-import javax.swing.ComboBoxModel;
-import javax.swing.JComboBox;
+import javax.swing.*;
 
 public class HiResComboBox<T> extends JComboBox<T> implements HiResComponent {
-
-    public HiResComboBox(ComboBoxModel aModel) {
-        super(aModel);
+    public HiResComboBox() {
+        this(new DefaultComboBoxModel<>());
     }
 
     public HiResComboBox(T[] items) {
-        super(items);
+        this(new DefaultComboBoxModel<>(items));
     }
 
-    public HiResComboBox(Vector items) {
-        super(items);
+    public HiResComboBox(Vector<T> items) {
+        this(new DefaultComboBoxModel<>(items));
     }
 
-    public HiResComboBox() {
+    public HiResComboBox(ComboBoxModel<T> aModel) {
+        super(aModel);
+        setFont(getFont());
     }
 
     @Override
@@ -44,8 +43,27 @@ public class HiResComboBox<T> extends JComboBox<T> implements HiResComponent {
     }
 
     @Override
-    public void setFont(Font font) {
-        super.setFont(ScreenUtils.font(font));
+    public void setFont(Font f) {
+        HiResFontManager.setFont(this, f);
     }
 
+    @Override
+    public Font getFont() {
+        return HiResFontManager.getFont(this);
+    }
+
+    @Override
+    public JToolTip createToolTip() {
+        return new HiResTooltip(this);
+    }
+
+    @Override
+    public void setFontSuper(Font font) {
+        super.setFont(font);
+    }
+
+    @Override
+    public Font getFontSuper() {
+        return super.getFont();
+    }
 }

@@ -15,40 +15,61 @@
  */
 package com.panayotis.hrgui;
 
-import java.awt.Font;
-import javax.swing.JTextField;
+import java.awt.*;
+import javax.swing.*;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 
 public class HiResTextField extends JTextField implements HiResTextComponent {
 
     public HiResTextField() {
+        this(null, null, 0);
     }
 
     public HiResTextField(String text) {
-        super(text);
+        this(null, text, 0);
     }
 
     public HiResTextField(int columns) {
-        super(columns);
+        this(null, null, columns);
     }
 
     public HiResTextField(String text, int columns) {
-        super(text, columns);
+        this(null, text, columns);
     }
 
     public HiResTextField(Document doc, String text, int columns) {
         super(doc, text, columns);
+        setFont(getFont());
     }
 
     @Override
     public void setFont(Font f) {
-        super.setFont(ScreenUtils.font(f));
+        HiResFontManager.setFont(this, f);
+    }
+
+    @Override
+    public Font getFont() {
+        return HiResFontManager.getFont(this);
+    }
+
+    @Override
+    public JToolTip createToolTip() {
+        return new HiResTooltip(this);
+    }
+
+    @Override
+    public void setFontSuper(Font font) {
+        super.setFont(font);
+    }
+
+    @Override
+    public Font getFontSuper() {
+        return super.getFont();
     }
 
     @Override
     public JTextComponent comp() {
         return this;
     }
-
 }

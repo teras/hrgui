@@ -15,48 +15,39 @@
  */
 package com.panayotis.hrgui;
 
+import com.panayotis.appenh.AFileChooser;
+import com.panayotis.appenh.EnhancerManager;
+
+import javax.swing.*;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
-import java.awt.Toolkit;
 
 public class ScreenUtils {
 
     static Color topcolor = Color.black;
     static Color bottomcolor = Color.black;
-    private final static boolean HiDPI;
-    private final static float dpiScale;
 
-    private static boolean shouldAdjust;
-    private static float graphicsScale;
-    private static float textScale;
+    private static final boolean HiDPI;
+    private static final boolean shouldScale;
+    private static final float graphicsScale;
+    private static final float textScale;
 
     static {
-        String OS = System.getProperty("os.name").toLowerCase();
-        boolean IS_LINUX = OS.contains("linux");
-        boolean IS_WINDOWS = OS.contains("windows");
-        boolean IS_MACOSX = OS.contains("mac");
-        boolean NEW_WINDOWS = false;
-        try {
-            NEW_WINDOWS = IS_WINDOWS && Double.parseDouble(System.getProperty("os.version")) > 9.9999;
-        } catch (NumberFormatException ignored) {
-        }
+        int dpi = EnhancerManager.getDefault().getDPI();
+        HiDPI = dpi > 110;
+        shouldScale = EnhancerManager.getDefault().shouldScaleUI();
+        if (shouldScale) {
+            graphicsScale = dpi / 96f;
+            textScale = graphicsScale;
+        } else
+            graphicsScale = textScale = 1;
 
-        dpiScale = Toolkit.getDefaultToolkit().getScreenResolution() / 96f;
-        HiDPI = dpiScale > 1.2;
-        shouldAdjust = (!IS_MACOSX && (IS_LINUX || NEW_WINDOWS)) && HiDPI;
-        updateScales();
-    }
-
-    private static void updateScales() {
-        graphicsScale = shouldAdjust ? dpiScale : 1;
-        textScale = shouldAdjust ? (float) Math.pow(dpiScale, 0.15) : 1;
-    }
-
-    public static void setShouldAdjust(boolean adjust) {
-        shouldAdjust = adjust;
-        updateScales();
+        AFileChooser.injectCustomVisuals(fc -> {
+            if (fc instanceof JFileChooser)
+                HiResFontUpdater.apply((JFileChooser) fc);
+        });
     }
 
     public static void setTint(Color topColor, Color bottomColor) {
@@ -78,30 +69,26 @@ public class ScreenUtils {
         return textScale;
     }
 
-    public static Font font(Font source) {
-        if (source == null)
-            return null;
-        return shouldAdjust
-                ? source.deriveFont(source.getSize2D() * textScale)
-                : source;
+    public static boolean shouldScale() {
+        return shouldScale;
     }
 
-    public static Font fontFull(Font source) {
-        if (source == null)
-            return null;
-        return source.deriveFont(source.getSize2D() * textScale * textScale * graphicsScale);
+    public static Font font(Font source) {
+        if (source == null || source instanceof HiResFont || !shouldScale)
+            return source;
+        return new HiResFont(source);
     }
 
     public static Dimension dimension(Dimension d) {
         if (d == null)
             return null;
-        return shouldAdjust
+        return shouldScale
                 ? new Dimension((int) (d.width * graphicsScale), (int) (d.height * graphicsScale))
                 : d;
     }
 
     public static Insets insets(int top, int left, int bottom, int right) {
-        return shouldAdjust
+        return shouldScale
                 ? new Insets((int) (top * graphicsScale), (int) (left * graphicsScale), (int) (bottom * graphicsScale), (int) (right * graphicsScale))
                 : new Insets(top, left, bottom, right);
     }

@@ -15,9 +15,8 @@
  */
 package com.panayotis.hrgui;
 
-import java.awt.Component;
-import java.awt.LayoutManager;
-import javax.swing.JPanel;
+import java.awt.*;
+import javax.swing.*;
 
 public class HiResPanel extends JPanel implements HiResContainer {
 
@@ -37,8 +36,32 @@ public class HiResPanel extends JPanel implements HiResContainer {
     }
 
     @Override
+    public void setFont(Font f) {
+        HiResFontManager.setFont(this, f);
+    }
+
+    @Override
+    public Font getFont() {
+        return HiResFontManager.getFont(this);
+    }
+
+    @Override
+    public JToolTip createToolTip() {
+        return new HiResTooltip(this);
+    }
+
+    @Override
+    public void setFontSuper(Font font) {
+        super.setFont(font);
+    }
+
+    @Override
+    public Font getFontSuper() {
+        return super.getFont();
+    }
+
+    @Override
     public Component comp() {
         return this;
     }
-
 }

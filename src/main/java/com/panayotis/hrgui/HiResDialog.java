@@ -15,13 +15,8 @@
  */
 package com.panayotis.hrgui;
 
-import java.awt.Component;
-import java.awt.Dialog;
-import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.GraphicsConfiguration;
-import java.awt.Window;
-import javax.swing.JDialog;
+import java.awt.*;
+import javax.swing.*;
 
 public class HiResDialog extends JDialog implements HiResComponent {
 
@@ -114,8 +109,27 @@ public class HiResDialog extends JDialog implements HiResComponent {
     }
 
     @Override
+    public void setFont(Font f) {
+        HiResFontManager.setFont(this, f);
+    }
+
+    @Override
+    public Font getFont() {
+        return HiResFontManager.getFont(this);
+    }
+
+    @Override
+    public void setFontSuper(Font font) {
+        super.setFont(font);
+    }
+
+    @Override
+    public Font getFontSuper() {
+        return super.getFont();
+    }
+
+    @Override
     public Component comp() {
         return this;
     }
-
 }

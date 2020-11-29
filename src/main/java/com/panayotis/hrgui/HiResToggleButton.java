@@ -15,52 +15,70 @@
  */
 package com.panayotis.hrgui;
 
-import java.awt.Component;
-import java.awt.Font;
-import javax.swing.Action;
-import javax.swing.Icon;
-import javax.swing.JToggleButton;
+import java.awt.*;
+import javax.swing.*;
 
-public class HiResToggleButton extends JToggleButton implements HiResComponent, HiResIconManager {
+public class HiResToggleButton extends JToggleButton implements HiResIconManager, HiResComponent {
 
     public HiResToggleButton() {
+        this(null, null, false);
     }
 
     public HiResToggleButton(HiResIcon icon) {
-        setIcons(icon);
+        this(null, icon, false);
     }
 
     @SuppressWarnings("OverridableMethodCallInConstructor")
     public HiResToggleButton(HiResIcon icon, boolean selected) {
-        setSelected(selected);
-        setIcons(icon);
+        this(null, icon, selected);
     }
 
     public HiResToggleButton(String text) {
-        super(text);
+        this(text, null, false);
     }
 
     public HiResToggleButton(String text, boolean selected) {
-        super(text, selected);
+        this(text, null, selected);
     }
 
     public HiResToggleButton(Action a) {
-        super(a);
+        this(null, null, false);
+        setAction(a);
     }
 
     public HiResToggleButton(String text, HiResIcon icon) {
-        super(text);
-        setIcons(icon);
+        this(text, icon, false);
     }
 
     public HiResToggleButton(String text, HiResIcon icon, boolean selected) {
         super(text, selected);
         setIcons(icon);
+        setFont(getFont());
     }
 
     @Override
-    public void setFont(Font font) {
-        super.setFont(ScreenUtils.font(font));
+    public void setFont(Font f) {
+        HiResFontManager.setFont(this, f);
+    }
+
+    @Override
+    public Font getFont() {
+        return HiResFontManager.getFont(this);
+    }
+
+    @Override
+    public JToolTip createToolTip() {
+        return new HiResTooltip(this);
+    }
+
+    @Override
+    public void setFontSuper(Font font) {
+        super.setFont(font);
+    }
+
+    @Override
+    public Font getFontSuper() {
+        return super.getFont();
     }
 
     public void setIcon(String iconResource, boolean tinted) {
@@ -112,5 +130,4 @@ public class HiResToggleButton extends JToggleButton implements HiResComponent, 
     public Component comp() {
         return this;
     }
-
 }
