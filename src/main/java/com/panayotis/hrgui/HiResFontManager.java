@@ -7,7 +7,7 @@ class HiResFontManager {
         Font font = comp.getFontSuper();
         if (!ScreenUtils.shouldScale() || font == null)
             return font;
-        return font instanceof HiResFont ? font : new HiResFont(font.getName(), font.getStyle(), font instanceof HiResFont ? font.getSize() : font.getSize() / ScreenUtils.getTextScale());
+        return font instanceof HiResFont ? font : new HiResFont(font.getName(), font.getStyle(), font instanceof HiResFont ? font.getSize() : font.getSize() / ScreenUtils.getScaleFactor());
     }
 
     static void setFont(HiResComponent comp, Font font) {

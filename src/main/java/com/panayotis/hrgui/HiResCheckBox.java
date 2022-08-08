@@ -15,8 +15,8 @@
  */
 package com.panayotis.hrgui;
 
-import java.awt.*;
 import javax.swing.*;
+import java.awt.*;
 
 public class HiResCheckBox extends JCheckBox implements HiResIconManager, HiResComponent {
 
@@ -79,13 +79,14 @@ public class HiResCheckBox extends JCheckBox implements HiResIconManager, HiResC
     public Font getFontSuper() {
         return super.getFont();
     }
+
     public void setIcon(String iconResource, boolean tinted) {
         setIcons(new HiResIcon(iconResource, tinted));
     }
 
+    @Override
     public void setIcon(Icon defaultIcon) {
-        HiResIcon icon = defaultIcon == null ? null : defaultIcon instanceof HiResIcon ? (HiResIcon) defaultIcon : new HiResIcon(defaultIcon);
-        setIcons(icon);
+        setIcons(HiResIcon.fromIcon(defaultIcon));
     }
 
     public void setSelectedIcon(String iconResource, boolean tinted) {

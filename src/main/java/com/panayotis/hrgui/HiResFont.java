@@ -17,7 +17,7 @@ public class HiResFont extends Font {
     }
 
     private HiResFont(String name, int style, float size, boolean derivedFromHiRes) {
-        super(name, style, (int) Math.ceil(derivedFromHiRes ? size : size * ScreenUtils.getTextScale()));
+        super(name, style, (int) Math.ceil(derivedFromHiRes ? size : size * ScreenUtils.getScaleFactor()));
         this.size = size;
     }
 

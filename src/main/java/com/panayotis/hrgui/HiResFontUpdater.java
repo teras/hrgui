@@ -14,7 +14,7 @@ public class HiResFontUpdater {
         for (Component c : container.getComponents()) {
             if (c instanceof JComponent) {
                 JComponent i = (JComponent) c;
-                i.setFont(i.getFont().deriveFont(i.getFont().getSize() * ScreenUtils.getTextScale()));
+                i.setFont(i.getFont().deriveFont(i.getFont().getSize() * ScreenUtils.getScaleFactor()));
             }
             if (c instanceof Container)
                 applyImpl((Container) c, false);

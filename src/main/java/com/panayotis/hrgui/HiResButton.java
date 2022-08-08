@@ -74,9 +74,9 @@ public class HiResButton extends JButton implements HiResIconManager, HiResCompo
         setIcons(iconResource == null ? null : new HiResIcon(iconResource, tinted));
     }
 
+    @Override
     public void setIcon(Icon defaultIcon) {
-        HiResIcon icon = defaultIcon == null ? null : defaultIcon instanceof HiResIcon ? (HiResIcon) defaultIcon : new HiResIcon(defaultIcon);
-        setIcons(icon);
+        setIcons(HiResIcon.fromIcon(defaultIcon));
     }
 
     public void setSelectedIcon(String iconResource, boolean tinted) {

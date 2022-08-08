@@ -15,8 +15,8 @@
  */
 package com.panayotis.hrgui;
 
-import java.awt.*;
 import javax.swing.*;
+import java.awt.*;
 
 public class HiResLabel extends JLabel implements HiResComponent {
 
@@ -85,7 +85,9 @@ public class HiResLabel extends JLabel implements HiResComponent {
         setIcon(new HiResIcon(iconResource, tinted));
     }
 
+    @Override
     public void setIcon(Icon icon) {
-        super.setIcon(icon == null ? null : (icon instanceof HiResIcon ? icon : new HiResIcon(icon)));
+        super.setIcon(HiResIcon.fromIcon(icon));
     }
+
 }

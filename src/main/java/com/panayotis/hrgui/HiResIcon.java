@@ -15,132 +15,116 @@
  */
 package com.panayotis.hrgui;
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 import java.net.URL;
-import javax.imageio.ImageIO;
-import javax.swing.GrayFilter;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 
 public class HiResIcon extends ImageIcon {
+    private static final float SCALE_FACTOR = ScreenUtils.getScaleFactor();
 
-    private static int scale = ScreenUtils.isHiDPI() ? 2 : 1;
+    private final int cWidth;
+    private final int cHeight;
+    private final int scale;
+
+    public HiResIcon(Image image, int scale) {
+        super(image);
+        this.scale = scale;
+        this.cWidth = (int) (image.getWidth(null) * SCALE_FACTOR / scale + 0.5f);
+        this.cHeight = (int) (image.getHeight(null) * SCALE_FACTOR / scale + 0.5f);
+    }
+
+    private HiResIcon(ScalableImage scalableImage) {
+        this(scalableImage == null ? null : scalableImage.image, scalableImage == null ? 1 : scalableImage.scale);
+    }
 
     public HiResIcon(String resourceName, boolean tinted) {
-        super(resourceToImage(resourceName, tinted, null, null));
+        this(resourceToImage(resourceName, tinted, null, null));
     }
 
     public HiResIcon(String resourceName, Color topColor, Color bottomColor) {
-        super(resourceToImage(resourceName, topColor != null || bottomColor != null, topColor, bottomColor));
+        this(resourceToImage(resourceName, topColor != null || bottomColor != null, topColor, bottomColor));
     }
 
-    public HiResIcon(Image image) {
-        super(image);
-    }
-
-    public HiResIcon(Icon defaultIcon) {
-        super(iconToImage(defaultIcon));
+    public static HiResIcon fromIcon(Icon icon) {
+        if (icon == null || icon instanceof HiResIcon)
+            return (HiResIcon) icon;
+        throw new IllegalArgumentException("Unable to retrieve icon scale");
     }
 
     @Override
     public synchronized void paintIcon(Component c, Graphics g, int x, int y) {
-        if (scale < 2) {
-            super.paintIcon(c, g, x, y);
-            return;
-        }
         ImageObserver observer = getImageObserver();
-        if (observer == null)
-            observer = c;
-        Image image = getImage();
-        Graphics2D g2 = upgradeQuality(g.create(x, y, image.getWidth(observer), image.getHeight(observer)));
-        g2.scale(ScreenUtils.getGraphicsScale() / scale, ScreenUtils.getGraphicsScale() / scale);
-        g2.drawImage(image, 0, 0, observer);
-        g2.scale(1, 1);
-        g2.dispose();
+        if (observer == null) observer = c;
+        upgradeQuality(g).drawImage(getImage(), x, y, cWidth, cHeight, observer);
     }
 
     @Override
     public int getIconHeight() {
-        return scale > 1
-                ? (int) (ScreenUtils.getGraphicsScale() * super.getIconHeight() / scale)
-                : super.getIconHeight();
+        return cHeight;
     }
 
     @Override
     public int getIconWidth() {
-        return scale > 1
-                ? (int) (ScreenUtils.getGraphicsScale() * super.getIconWidth() / scale)
-                : super.getIconWidth();
+        return cWidth;
     }
 
     public HiResIcon getDisabledIcon() {
-        return new HiResIcon(GrayFilter.createDisabledImage(getImage()));
+        return new HiResIcon(GrayFilter.createDisabledImage(getImage()), scale);
     }
 
-    private static Image resourceToImage(String resource, boolean tinted, Color topcolor, Color bottomcolor) {
-        BufferedImage in = findIcon(resource);
-        if (in == null || !tinted)
-            return in;
-
-        if (topcolor == null)
-            topcolor = ScreenUtils.topcolor;
-        if (bottomcolor == null)
-            bottomcolor = ScreenUtils.bottomcolor;
-
-        BufferedImage out = new BufferedImage(in.getWidth(), in.getHeight(), BufferedImage.TYPE_INT_ARGB);
+    private static ScalableImage resourceToImage(String resource, boolean tinted, Color topColor, Color bottomColor) {
+        ScalableImage in = findIcon(resource);
+        if (in == null || !tinted) return in;
+        if (topColor == null) topColor = ScreenUtils.topcolor;
+        if (bottomColor == null) bottomColor = ScreenUtils.bottomcolor;
+        BufferedImage out = new BufferedImage(in.image.getWidth(null), in.image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = upgradeQuality(out.createGraphics());
-        g2.drawImage(in, 0, 0, null);
+        g2.drawImage(in.image, 0, 0, null);
         g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_IN, 1));
-        g2.setPaint(new GradientPaint(0, 0, topcolor, 0, in.getHeight(), bottomcolor));
-        g2.fillRect(0, 0, in.getWidth(), in.getHeight());
+        g2.setPaint(new GradientPaint(0, 0, topColor, 0, in.image.getHeight(null), bottomColor));
+        g2.fillRect(0, 0, in.image.getWidth(null), in.image.getHeight(null));
         g2.dispose();
-        return out;
+        return new ScalableImage(out, in.scale);
     }
 
-    static Image iconToImage(Icon icon) {
-        if (icon == null)
-            return null;
-        else if (icon instanceof ImageIcon)
-            return ((ImageIcon) icon).getImage();
-        else {
-            int width = icon.getIconWidth();
-            int height = icon.getIconHeight();
-            BufferedImage image = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration().createCompatibleImage(width, height);
-            Graphics2D g = upgradeQuality(image.createGraphics());
-            icon.paintIcon(null, g, 0, 0);
-            g.dispose();
-            return image;
-        }
-    }
-
-    private static BufferedImage halfSize(Image input) {
-        BufferedImage result = new BufferedImage(input.getWidth(null) / 2, input.getHeight(null) / 2, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = upgradeQuality(result.createGraphics());
-        g.drawImage(input, 0, 0, result.getWidth(), result.getHeight(), null);
-        g.dispose();
-        return result;
-    }
-
-    private static BufferedImage findIcon(String resourcePath) {
-        URL resource;
+    private static BufferedImage loadIcon(String resourcePath) {
         try {
-            resource = HiResIcon.class.getClassLoader().getResource(resourcePath + (scale > 1 ? "@2x" : "") + ".png");
-            if (resource != null)
-                return ImageIO.read(resource);
-        } catch (Exception ignored) {
+            URL resource = HiResIcon.class.getClassLoader().getResource(resourcePath);
+            return resource != null ? ImageIO.read(resource) : null;
+        } catch (Exception error) {
+            return null;
         }
-        if (scale <= 1)
-            try {
-                resource = HiResIcon.class.getClassLoader().getResource(resourcePath + "@2x.png");
-                if (resource != null)
-                    return halfSize(ImageIO.read(resource));
-            } catch (Exception ignored) {
-            }
+    }
+
+    private static ScalableImage findIcon(String resourcePath) {
+        BufferedImage result;
+        // First return based on real scale
+        float scaled = ScreenUtils.getScaleFactor();
+        if (scaled > 2.2) {
+            result = loadIcon(resourcePath + "@3x.png");
+            if (result != null) return new ScalableImage(result, 3);
+        }
+        if (scaled > 1.1) {
+            result = loadIcon(resourcePath + "@2x.png");
+            if (result != null) return new ScalableImage(result, 2);
+        }
+        result = loadIcon(resourcePath + ".png");
+        if (result != null) return new ScalableImage(result, 1);
+
+        // Not found based on real scale, return using any scale then
+        result = loadIcon(resourcePath + "@2x.png");
+        if (result != null) return new ScalableImage(result, 2);
+        result = loadIcon(resourcePath + "@3x.png");
+        if (result != null) return new ScalableImage(result, 3);
+
+        // Not found
         System.err.println("Unable to locate resource " + resourcePath);
         return null;
     }
+
 
     private static Graphics2D upgradeQuality(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
@@ -152,5 +136,15 @@ public class HiResIcon extends ImageIcon {
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
         g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         return g2;
+    }
+
+    private static class ScalableImage {
+        private final Image image;
+        private final int scale;
+
+        public ScalableImage(Image image, int scale) {
+            this.image = image;
+            this.scale = scale;
+        }
     }
 }

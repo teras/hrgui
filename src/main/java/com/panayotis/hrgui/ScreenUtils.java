@@ -31,18 +31,22 @@ public class ScreenUtils {
 
     private static final boolean HiDPI;
     private static final boolean shouldScale;
-    private static final float graphicsScale;
-    private static final float textScale;
+    private static final float scaleFactor;
+
+    private static final HiResPreferences prefs = HiResPreferences.getDefault();
 
     static {
         int dpi = EnhancerManager.getDefault().getDPI();
         HiDPI = dpi > 110;
-        shouldScale = EnhancerManager.getDefault().shouldScaleUI();
-        if (shouldScale) {
-            graphicsScale = dpi / 96f;
-            textScale = graphicsScale;
-        } else
-            graphicsScale = textScale = 1;
+        float cScale = prefs.scaleFactor();
+        if (cScale <= 0) {    // not set yet, should use defaults
+            cScale = EnhancerManager.getDefault().shouldScaleUI()
+                    ? dpi / 96f
+                    : 1;
+            prefs.storePrefs(cScale);
+        }
+        scaleFactor = cScale;
+        shouldScale = scaleFactor > 1.01;
 
         AFileChooser.injectCustomVisuals(fc -> {
             if (fc instanceof JFileChooser)
@@ -61,12 +65,8 @@ public class ScreenUtils {
         return HiDPI;
     }
 
-    public static float getGraphicsScale() {
-        return graphicsScale;
-    }
-
-    public static float getTextScale() {
-        return textScale;
+    public static float getScaleFactor() {
+        return scaleFactor;
     }
 
     public static boolean shouldScale() {
@@ -83,13 +83,13 @@ public class ScreenUtils {
         if (d == null)
             return null;
         return shouldScale
-                ? new Dimension((int) (d.width * graphicsScale), (int) (d.height * graphicsScale))
+                ? new Dimension((int) (d.width * scaleFactor), (int) (d.height * scaleFactor))
                 : d;
     }
 
     public static Insets insets(int top, int left, int bottom, int right) {
         return shouldScale
-                ? new Insets((int) (top * graphicsScale), (int) (left * graphicsScale), (int) (bottom * graphicsScale), (int) (right * graphicsScale))
+                ? new Insets((int) (top * scaleFactor), (int) (left * scaleFactor), (int) (bottom * scaleFactor), (int) (right * scaleFactor))
                 : new Insets(top, left, bottom, right);
     }
 
@@ -97,5 +97,8 @@ public class ScreenUtils {
         if (i == null)
             return null;
         return insets(i.top, i.left, i.bottom, i.right);
+    }
+
+    private ScreenUtils() {
     }
 }

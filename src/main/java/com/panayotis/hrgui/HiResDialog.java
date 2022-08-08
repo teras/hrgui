@@ -90,7 +90,7 @@ public class HiResDialog extends JDialog implements HiResComponent {
 
     @Override
     public void setSize(int width, int height) {
-        super.setSize((int) (ScreenUtils.getGraphicsScale() * width), (int) (ScreenUtils.getGraphicsScale() * height));
+        super.setSize((int) (ScreenUtils.getScaleFactor() * width), (int) (ScreenUtils.getScaleFactor() * height));
     }
 
     @Override
